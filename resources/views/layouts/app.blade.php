@@ -18,13 +18,8 @@
 </head>
 <body>
     <div id="app" class="p-5">
-        <post-component></post-component>
+        @yield('content')
     </div>
 </body>
 </html>
-<script>
-    import PostComponent from "../../js/components/PostComponent";
-    export default {
-        components: {PostComponent}
-    }
-</script>
+
