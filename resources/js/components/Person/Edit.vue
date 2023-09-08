@@ -1,16 +1,16 @@
 <template>
-    <div class="w-25">
+    <div class="w-25" v-if="person">
         <div class="mb-3">
-            <input type="text" v-model="name" placeholder="name" class="form-control">
+            <input type="text" v-model="person.name" placeholder="name" class="form-control">
         </div>
         <div class="mb-3">
-            <input type="number" v-model="age" placeholder="age" class="form-control">
+            <input type="number" v-model="person.age" placeholder="age" class="form-control">
         </div>
         <div class="mb-3">
-            <input type="text" v-model="job" placeholder="job" class="form-control">
+            <input type="text" v-model="person.job" placeholder="job" class="form-control">
         </div>
         <div class="mb-3">
-            <input :disabled="!isDisabled" @click.prevent="update" type="submit" value="Update" class="btn btn-primary">
+            <input :disabled="!isDisabled" @click.prevent="$store.dispatch('update', {id: person.id, name: person.name, age: person.age, job: person.job})" type="submit" value="Update" class="btn btn-primary">
         </div>
     </div>
 </template>
@@ -18,43 +18,22 @@
 <script>
 import axios from "axios";
 import router from "../../router";
+import {mapGetters} from 'vuex'
 
 export default {
     name: "Edit",
 
-    data() {
-        return {
-            name: null,
-            age: null,
-            job: null,
-        }
-    },
-
     mounted() {
-        this.getPerson()
+        this.$store.dispatch('getPerson', this.$route.params.id)
     },
 
-    methods: {
-        getPerson() {
-            axios.get(`/api/people/${this.$route.params.id}` )
-            .then( res => {
-                this.name = res.data.data.name
-                this.age = res.data.data.age
-                this.job = res.data.data.job
-            })
-        },
-
-        update() {
-            axios.patch(`/api/people/${this.$route.params.id}`, {name: this.name, age: this.age, job: this.job})
-            .then( res => {
-                router.push({ name: 'person.show', params: { id: this.$route.params.id } })
-            })
-        }
-    },
 
     computed: {
         isDisabled() {
-            return this.name && this.age && this.job
+            return this.person.name && this.person.age && this.person.job
+        },
+        person() {
+            return this.$store.getters.person
         }
     }
 
